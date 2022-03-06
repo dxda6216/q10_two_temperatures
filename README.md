@@ -1,2 +1,5 @@
-# q10_two_temperatures
-A simple code to calculate Q10 values for circadian period on Colab.
+# Q10 for circadian clocks
+This is a simple code to calculate Q10 values from circadian periods at 2 different temperatures.
+
+Also see:
+https://github.com/dxda6216/q10
