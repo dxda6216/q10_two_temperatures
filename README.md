@@ -1,5 +1,5 @@
-# Circadian period Q10 calculator
-This is a simple code to calculate Q10 values from circadian periods at 2 different temperatures.
+# Circadian period Q<sub>10</sub> calculator
+This is a simple code to calculate Q<sub>10</sub> values from circadian periods at 2 different temperatures.
 
 https://colab.research.google.com/github/dxda6216/q10_two_temperatures/blob/main/circadian_period_q10_2_temperatures.ipynb
 
