@@ -1,8 +1,8 @@
 # Circadian period Q<sub>10</sub> calculator
-This is a simple code to calculate Q<sub>10</sub> values from circadian periods at 2 different temperatures.
+This is a simple code to calculate Q<sub>10</sub> values.
 
 Q<sub>10</sub> values will be calculated by the following equation:<br />
-![Q10_2tp_s](https://user-images.githubusercontent.com/101025597/157146195-8c98c050-e3dc-44ab-9f95-86ac02ee8b6e.png) <br />
+![q10_eq_s](https://user-images.githubusercontent.com/101025597/157246791-fafd8e4e-d997-413c-a35e-82eea43a9cbc.png) <br />
 
 https://colab.research.google.com/github/dxda6216/q10_two_temperatures/blob/main/circadian_period_q10_2_temperatures.ipynb
 
