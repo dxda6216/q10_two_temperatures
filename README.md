@@ -33,4 +33,4 @@ enter your data as follows:
 <b>Temperature_2:</b> <ins>37.0                             </ins>
 <b>Period_2:</b> <ins>22.6                                  </ins></pre>
 
-This calculator is for calculating Q10 values and plotting data only. Your data entered to this calculator will not be recorded or saved in any location (please see the code).
+This calculator is for calculating Q<sub>10</sub> values and plotting data only. Your data entered to this calculator will not be recorded or saved in any location (please see the code).
