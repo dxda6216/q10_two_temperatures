@@ -37,4 +37,4 @@ This calculator is for calculating Q<sub>10</sub> values and plotting data only.
 
 <b><ins>Exporting Dataset and Fitted Curve</ins></b>
 
-To output the dataset and fitted curve in tab-delimited format, select "<b>Yes</b>" in the "<i>Display_tab_delimited_data</i>" dropdown, and 2-column datasets will be displayed. To export the data to Excel, copy the dataset and paste it onto an Excel worksheet (right click →  Paste Options: Paste Special... → Paste as Unicode Text → click "OK").
+To output the dataset and fitted curve in tab-delimited format, select "<b>Yes</b>" in the "<i>Display_tab_delimited_data</i>" dropdown, and 2-column datasets will be displayed. To export the data to Excel, copy the 2-column dataset and paste it onto an Excel worksheet (right click →  Paste Options: Paste Special... → Paste as Unicode Text → click "OK").
