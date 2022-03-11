@@ -34,3 +34,7 @@ enter your data as follows:
 <b>Period_2:</b> <ins>22.6                                  </ins></pre>
 
 This calculator is for calculating Q<sub>10</sub> values and plotting data only. Your data entered to this calculator will not be recorded or saved in any location (please see the code).
+
+<b><ins>Exporting Dataset and Fitted Curve</ins></b>
+
+To output the dataset and fitted curve in tab-delimited format, select "<b>Yes</b>" in the "<i>Display_tab_delimited_data</i>" dropdown, and 2-column datasets will be displayed. To export the data to Excel, copy the dataset and paste it onto an Excel worksheet (right click →  Paste Options: Paste Special... → Paste as Unicode Text → click "OK").
