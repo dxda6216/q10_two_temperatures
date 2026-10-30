@@ -266,9 +266,9 @@ footer a{color:var(--cool)}
     $("unc").textContent = unc;
 
     var interp = "";
-    if (q10 >= 0.8 && q10 <= 1.2) interp = "Within the typical compensated range (0.8–1.2).";
-    else if (q10 > 1.2) interp = "Above the typical compensated range (0.8–1.2).";
-    else interp = "Below 0.8: overcompensated.";
+    if (q10 >= 0.9 && q10 <= 1.1) interp = "Within the typical compensated range (0.9–1.1).";
+    else if (q10 > 1.1) interp = "Above the typical compensated range (0.9–1.1).";
+    else interp = "Below 0.9: overcompensated.";
     $("interp").textContent = interp;
 
     // Fitted curve through the means: P(T) = P1 * Q10^(-(T - T1)/10)
