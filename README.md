@@ -1,6 +1,23 @@
 # Circadian period Q<sub>10</sub> calculator (web app)
 
-A single-file web app that calculates the temperature coefficient (Q<sub>10</sub>) of the circadian period from measurements taken at two temperatures. It is a browser-based version of the Colab notebook `dxda6216/q10_two_temperatures`, extended to accept replicate measurements at each temperature.
+Q<sub>10</sub> is the factor by which a rate changes for a 10°C rise in temperature \([see van\'t Hoff\'s Q<sub>10</sub> table](https://dxda6216.github.io/q10/images/vant_hoff_q10.png)\). From rates R<sub>1</sub> and R<sub>2</sub> measured at temperatures T<sub>1</sub> and T<sub>2</sub>:
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://latex.codecogs.com/svg.image?%5Ccolor%7Bwhite%7DQ_%7B10%7D%20%3D%20%5Cleft%28%5Cfrac%7BR_2%7D%7BR_1%7D%5Cright%29%5E%7B10%2F%28T_2%20-%20T_1%29%7D">
+  <img alt="Q_{10} = \left(\frac{R_2}{R_1}\right)^{\frac{10}{T_2-T_1}}" src="https://latex.codecogs.com/svg.image?Q_%7B10%7D%20%3D%20%5Cleft%28%5Cfrac%7BR_2%7D%7BR_1%7D%5Cright%29%5E%7B%5Cfrac%7B10%7D%7BT_2-T_1%7D%7D">
+</picture>
+</p>
+
+In a periodic phenomenon where frequencies f<sub>1</sub> and f<sub>2</sub>, and periods τ<sub>1</sub> and τ<sub>2</sub> are measured at temperatures T<sub>1</sub> and T<sub>2</sub>:
+
+<p align="center">
+<picture>
+  <img alt="Q_{10} = \left (  \frac{f_{2}}{f_{1}}\right )^{\frac{10}{ T_2-T_1 }} = \left ( \frac{\tau_1}{\tau_2} \right )^{\frac{10}{ T_2-T_1 }}" src="https://fxtex.codecogs.com/svg.image?Q_%7B10%7D%3D%5Cleft%28%5Cfrac%7Bf_%7B2%7D%7D%7Bf_%7B1%7D%7D%5Cright%29%5E%7B%5Cfrac%7B10%7D%7BT_2-T_1%7D%7D%3D%5Cleft%28%5Cfrac%7B%5Ctau_1%7D%7B%5Ctau_2%7D%5Cright%29%5E%7B%5Cfrac%7B10%7D%7BT_2-T_1%7D%7D">
+</picture>
+</p>
+
+This is a single-file web app that calculates the temperature coefficient (Q<sub>10</sub>) of the circadian period from measurements taken at two temperatures. It is a browser-based version of the Colab notebook `dxda6216/q10_two_temperatures`, extended to accept replicate measurements at each temperature.
 
 **Try it now: <https://dxda6216.github.io/q10_two_temperatures/index.html>**
 
