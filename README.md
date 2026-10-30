@@ -72,9 +72,9 @@ The app labels the result against the commonly cited temperature-compensation ra
 
 | Q<sub>10</sub> | Label |
 |---|---|
-| 0.8–1.2 | Within the typical compensated range |
-| > 1.2 | Above the typical compensated range |
-| < 0.8 | Overcompensated |
+| 0.9–1.1 | Within the typical compensated range |
+| > 1.1 | Above the typical compensated range |
+| < 0.9 | Overcompensated |
 
 ## Plot
 
