@@ -1,18 +1,19 @@
-# Circadian period Q10 calculator (web app)
+# Circadian period Q<sub>10</sub> calculator (web app)
 
 **Try it now: <https://dxda6216.github.io/q10_two_temperatures/index.html>**
 
 Open the link in your browser and start using it right away — no download needed. Everything runs locally in your browser. No data is sent anywhere or saved.
 
-This is a single-file web app that calculates the temperature coefficient (Q10) of the circadian period from measurements taken at two temperatures. It is a browser-based version of the Colab notebook in this repository ([`circadian_period_q10_2_temperatures.ipynb`](https://github.com/dxda6216/q10_two_temperatures/blob/main/circadian_period_q10_2_temperatures.ipynb)), extended to accept replicate measurements at each temperature.
+This is a single-file web app that calculates the temperature coefficient (Q<sub>10</sub>) of the circadian period from measurements taken at two temperatures. It is a browser-based version of the Colab notebook in this repository ([`circadian_period_q10_2_temperatures.ipynb`](https://github.com/dxda6216/q10_two_temperatures/blob/main/circadian_period_q10_2_temperatures.ipynb)), extended to accept replicate measurements at each temperature.
 
-## What is Q10?
+## What is Q<sub>10</sub>?
 
-Q10 is the factor by which a rate changes for a 10°C rise in temperature ([see van't Hoff's Q10 table](https://dxda6216.github.io/q10/images/vant_hoff_q10.png)). From rates R1 and R2 measured at temperatures T1 and T2:
+Q<sub>10</sub> is the factor by which a rate changes for a 10°C rise in temperature. From rates R<sub>1</sub> and R<sub>2</sub> measured at temperatures T<sub>1</sub> and T<sub>2
+</sub>:
 
 ![Q_{10} = \left(\frac{R_2}{R_1}\right)^{\frac{10}{T_2-T_1}}](https://latex.codecogs.com/svg.image?Q_%7B10%7D%20%3D%20%5Cleft%28%5Cfrac%7BR_2%7D%7BR_1%7D%5Cright%29%5E%7B%5Cfrac%7B10%7D%7BT_2-T_1%7D%7D)
 
-In a periodic phenomenon where frequencies f1 and f2, and periods τ1 and τ2 are measured at temperatures T1 and T2:
+In a periodic phenomenon where frequencies f<sub>1</sub> and f<sub>2</sub>, and periods τ<sub>1</sub> and τ<sub>2</sub> are measured at temperatures T<sub>1</sub> and T<sub>2</sub>:
 
 ![Q_{10} = \left (  \frac{f_{2}}{f_{1}}\right )^{\frac{10}{ T_2-T_1 }} = \left ( \frac{\tau_1}{\tau_2} \right )^{\frac{10}{ T_2-T_1 }}](https://latex.codecogs.com/svg.image?Q_%7B10%7D%3D%5Cleft%28%5Cfrac%7Bf_%7B2%7D%7D%7Bf_%7B1%7D%7D%5Cright%29%5E%7B%5Cfrac%7B10%7D%7BT_2-T_1%7D%7D%3D%5Cleft%28%5Cfrac%7B%5Ctau_1%7D%7B%5Ctau_2%7D%5Cright%29%5E%7B%5Cfrac%7B10%7D%7BT_2-T_1%7D%7D)
 
@@ -40,17 +41,17 @@ Results update as you type.
 
 ## Calculation
 
-Replicates at each temperature are averaged, and Q10 is calculated from the mean periods:
+Replicates at each temperature are averaged, and Q<sub>10</sub> is calculated from the mean periods:
 
 ```
 Q10 = (τ̄1 / τ̄2) ^ (10 / (T2 − T1))
 ```
 
-where τ̄1 and τ̄2 are the mean periods at temperatures T1 and T2. With a single value per temperature, this is identical to the original notebook's two-point calculation.
+where τ<sub>1</sub> and τ<sub>2</sub> are the mean periods at temperatures T<sub>1</sub> and T<sub>2</sub>. With a single value per temperature, this is identical to the original notebook's two-point calculation.
 
 ### Fitted curve
 
-The plotted curve is the exponential relationship implied by Q10, passing through both mean periods:
+The plotted curve is the exponential relationship implied by Q<sub>10</sub>, passing through both mean periods:
 
 ```
 τ(T) = τ̄1 · Q10 ^ (−(T − T1) / 10)
@@ -62,9 +63,9 @@ It is drawn from 25% of the temperature span below the lower temperature to 25% 
 
 For each temperature the app reports n, mean, sample standard deviation (SD, n − 1 denominator), and standard error of the mean (SEM = SD / √n).
 
-### Uncertainty of Q10
+### Uncertainty of Q<sub>10</sub>
 
-When both temperatures have at least two replicates, an approximate standard error of Q10 is estimated by propagating each mean's SEM (delta method on ln Q10):
+When both temperatures have at least two replicates, an approximate standard error of Q<sub>10</sub> is estimated by propagating each mean's SEM (delta method on ln Q<sub>10</sub>):
 
 ```
 SE(ln Q10) = (10 / |T2 − T1|) · √[ (SEM1 / τ̄1)² + (SEM2 / τ̄2)² ]
@@ -78,10 +79,10 @@ This is a large-sample approximation intended as a guide. With small n, consider
 
 The app labels the result against the commonly cited temperature-compensation range for circadian clocks:
 
-| Q10     | Label                                |
+| Q<sub>10</sub>     | Label                                |
 |---------|--------------------------------------|
-| 0.9–1.1 | Within the typical compensated range |
-| > 1.1   | Above the typical compensated range  |
+| 0.9–1.2 | Within the typical compensated range |
+| > 1.2   | Above the typical compensated range  |
 | < 0.9   | Overcompensated                      |
 
 ## Plot
@@ -99,7 +100,7 @@ The **Tab-delimited data** panel provides three blocks, each with a **Copy** but
 | Block          | Contents                                                   |
 |----------------|------------------------------------------------------------|
 | All replicates | Temperature and period for every measurement               |
-| Summary        | Temperature, n, mean, SD, SEM for each condition, plus Q10 |
+| Summary        | Temperature, n, mean, SD, SEM for each condition, plus Q<sub>10</sub> |
 | Fitted curve   | Temperature and fitted period for the curve                |
 
 To paste into Excel: right-click a cell → **Paste Special…** → **Unicode Text** → **OK**.
