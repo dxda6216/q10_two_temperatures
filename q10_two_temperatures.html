@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Circadian period Q10 calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1F3; --panel:#FFFFFF; --ink:#1D2A33; --muted:#5C6B76; --rule:#CCD5DB;
+  --cool:#2F6FA3; --warm:#B8691F; --curve:#1D2A33; --err:#A3302F; --field:#F7F9FA; --notice:#FBF0E2;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141B20; --panel:#1C252C; --ink:#E4EAEE; --muted:#97A5AF; --rule:#33414B;
+    --cool:#6FA8DA; --warm:#E3A15C; --curve:#E4EAEE; --err:#E37A78; --field:#151D23; --notice:#2B241B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141B20; --panel:#1C252C; --ink:#E4EAEE; --muted:#97A5AF; --rule:#33414B;
+  --cool:#6FA8DA; --warm:#E3A15C; --curve:#E4EAEE; --err:#E37A78; --field:#151D23; --notice:#2B241B;
+  color-scheme: dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Work Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:14px; line-height:1.45;
+}
+main{max-width:1180px; margin:0 auto; padding:1rem 1.25rem}
+header{display:flex; flex-wrap:wrap; align-items:baseline; gap:.15rem 1.5rem}
+header h1{
+  font-family:"Spectral",Georgia,serif; font-weight:600;
+  font-size:1.6rem; line-height:1.2; margin:0;
+}
+header p{margin:0; color:var(--muted); max-width:none; flex-basis:100%; font-size:.9rem}
+header p.formula{flex-basis:auto; order:0}
+header p.sample{display:flex; flex-wrap:wrap; align-items:center; gap:.4rem .9rem; margin-top:.3rem; padding:.3rem .4rem .3rem .7rem; background:var(--notice); border-left:3px solid var(--warm); border-radius:4px; color:var(--ink)}
+header p.sample.cleared{background:transparent; border-left-color:transparent; padding-left:0; color:var(--muted)}
+#clearBtn{background:var(--panel)}
+.formula{font-family:"Spectral",Georgia,serif; font-size:1.05rem; margin:0; color:var(--ink)}
+.formula sup{font-size:.7em}
+.grid{display:grid; grid-template-columns:minmax(0,320px) minmax(0,1fr); gap:1rem; margin-top:.75rem; align-items:stretch}
+@media (max-width:760px){ .grid{grid-template-columns:1fr} }
+.panel{background:var(--panel); border:1px solid var(--rule); border-radius:6px; padding:.85rem 1rem}
+fieldset{border:0; padding:0; margin:0 0 .5rem}
+legend{font-weight:600; margin-bottom:.3rem; display:flex; align-items:center; gap:.5rem}
+.dot{width:.7rem; height:.7rem; border-radius:50%; display:inline-block}
+.dot.c{background:var(--cool)} .dot.w{background:var(--warm)}
+label{display:block; font-size:.8rem; color:var(--muted); margin-bottom:.15rem}
+.pair{display:grid; grid-template-columns:5.5rem 1fr; gap:.6rem; align-items:start}
+input[type=text], input[type=number], textarea{
+  width:100%; font:inherit; color:var(--ink); background:var(--field);
+  border:1px solid var(--rule); border-radius:4px; padding:.35rem .5rem;
+}
+textarea.periods{min-height:5rem; flex:1; resize:vertical; font-variant-numeric:tabular-nums}
+.inputs{display:flex; flex-direction:column}
+.inputs fieldset{flex:1; display:flex; flex-direction:column; min-height:0}
+.inputs .pair{flex:1; align-items:stretch}
+.inputs .pair > div:first-child{align-self:start}
+.pcol{display:flex; flex-direction:column}
+.right{display:flex; flex-direction:column; gap:.75rem; min-width:0}
+input:focus-visible, button:focus-visible, textarea:focus-visible{outline:2px solid var(--cool); outline-offset:2px}
+.stats{font-size:.78rem; color:var(--muted); margin:.2rem 0 0; font-variant-numeric:tabular-nums; min-height:1.2em}
+.hint{font-size:.78rem; color:var(--muted); margin:0 0 .5rem}
+.desc{margin-bottom:.5rem}
+.result{border-top:1px solid var(--rule); padding-top:.5rem; margin-top:.15rem}
+.result .label{font-size:.8rem; color:var(--muted)}
+.q10{font-family:"Spectral",Georgia,serif; font-weight:600; font-size:2.3rem; line-height:1; margin:.15rem 0 .3rem; font-variant-numeric:tabular-nums}
+.q10 small{font-size:1rem; font-weight:400; color:var(--muted)}
+.note{font-size:.8rem; color:var(--muted); margin:0 0 .2rem}
+.error{color:var(--err); font-size:.82rem; margin:.2rem 0 0; min-height:1.1em}
+.chart-wrap{overflow-x:auto}
+.chart-title{font-family:"Spectral",Georgia,serif; font-size:1.05rem; margin:0 0 .25rem; min-height:1.4em}
+.legend{display:flex; flex-wrap:wrap; gap:1rem; font-size:.78rem; color:var(--muted); margin-top:.25rem}
+.legend span{display:inline-flex; align-items:center; gap:.4rem}
+svg{display:block; width:100%; height:auto; min-width:420px}
+#chart{max-height:460px}
+.legend svg{width:auto; min-width:0; display:inline-block}
+svg text{font-family:"Work Sans",system-ui,sans-serif; fill:var(--muted); font-size:12px}
+svg .axis{stroke:var(--ink); stroke-width:1}
+svg .grid{stroke:var(--rule); stroke-width:1}
+svg .curve{fill:none; stroke:var(--curve); stroke-width:2}
+.export{margin-top:0}
+.export-head{display:flex; flex-wrap:wrap; align-items:baseline; gap:.1rem 1rem; margin-bottom:.4rem}
+.export h2{font-family:"Spectral",Georgia,serif; font-size:1.05rem; margin:0}
+.export p{margin:0; color:var(--muted); font-size:.8rem}
+.cols{display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem}
+@media (max-width:820px){ .cols{grid-template-columns:1fr} }
+.col-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:.2rem}
+.col-head strong{font-weight:600}
+textarea.out{height:100px; resize:vertical; font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; white-space:pre; overflow:auto}
+button{font:inherit; font-size:.78rem; font-weight:500; color:var(--ink); background:transparent; border:1px solid var(--rule); border-radius:4px; padding:.15rem .6rem; cursor:pointer}
+button:hover{border-color:var(--ink)}
+footer{margin-top:.5rem; font-size:.78rem; color:var(--muted)}
+footer a{color:var(--cool)}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Circadian period Q10 calculator</h1>
+    <p class="formula">Q10 = (τ̄<sub>1</sub> / τ̄<sub>2</sub>)<sup>10 / (T<sub>2</sub> − T<sub>1</sub>)</sup></p>
+    <p class="sample" id="sampleNote" role="status"><span id="sampleText">The values shown are <strong>sample data</strong>. Press Clear inputs to erase them, then enter your own data.</span><button type="button" id="clearBtn">Clear inputs</button></p>
+  </header>
+
+  <div class="grid">
+    <section class="panel inputs" aria-label="Inputs">
+      <div class="desc">
+        <label for="desc">Sample description (optional)</label>
+        <input type="text" id="desc" placeholder="e.g. XYZ knockout cells" value="">
+      </div>
+      <fieldset>
+        <legend><span class="dot c" aria-hidden="true"></span>Condition 1</legend>
+        <div class="pair">
+          <div><label for="t1">Temp (°C)</label><input type="number" step="any" id="t1" value="33.4" inputmode="decimal"></div>
+          <div class="pcol"><label for="p1" title="Separate with line breaks, spaces, commas or tabs, or paste an Excel column">Periods (h), one per line</label><textarea class="periods" id="p1" spellcheck="false">27.2
+27.5
+26.9</textarea></div>
+        </div>
+        <p class="stats" id="s1"></p>
+      </fieldset>
+      <fieldset>
+        <legend><span class="dot w" aria-hidden="true"></span>Condition 2</legend>
+        <div class="pair">
+          <div><label for="t2">Temp (°C)</label><input type="number" step="any" id="t2" value="37.0" inputmode="decimal"></div>
+          <div class="pcol"><label for="p2" title="Separate with line breaks, spaces, commas or tabs, or paste an Excel column">Periods (h), one per line</label><textarea class="periods" id="p2" spellcheck="false">22.6
+22.9
+22.4</textarea></div>
+        </div>
+        <p class="stats" id="s2"></p>
+      </fieldset>
+      <div class="result" aria-live="polite">
+        <div class="label">Q10 (from mean periods)</div>
+        <div class="q10" id="q10">–</div>
+        <p class="note" id="unc"></p>
+        <p class="note" id="interp"></p>
+        <p class="error" id="err"></p>
+      </div>
+    </section>
+
+    <div class="right">
+    <section class="panel" aria-label="Plot">
+      <p class="chart-title" id="chartTitle"></p>
+      <div class="chart-wrap"><svg id="chart" viewBox="0 0 640 380" role="img" aria-label="Period versus temperature with replicates, means ± SD and fitted Q10 curve"></svg></div>
+      <div class="legend">
+        <span><svg width="14" height="14" style="min-width:0"><circle cx="7" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Replicate</span>
+        <span><svg width="14" height="14" style="min-width:0"><circle cx="7" cy="7" r="6" fill="currentColor"/></svg>Mean ± SD</span>
+        <span><svg width="22" height="14" style="min-width:0"><line x1="0" y1="7" x2="22" y2="7" stroke="currentColor" stroke-width="2"/></svg>Fitted curve</span>
+      </div>
+    </section>
+
+  <section class="panel export" aria-label="Tab-delimited data">
+    <div class="export-head"><h2>Tab-delimited data</h2>
+    <p>Copy any block and paste it into Excel (Paste Special → Unicode Text).</p></div>
+    <div class="cols">
+      <div>
+        <div class="col-head"><strong>All replicates</strong><button type="button" data-copy="dataOut">Copy</button></div>
+        <textarea class="out" id="dataOut" readonly aria-label="All replicates, tab-delimited"></textarea>
+      </div>
+      <div>
+        <div class="col-head"><strong>Summary</strong><button type="button" data-copy="sumOut">Copy</button></div>
+        <textarea class="out" id="sumOut" readonly aria-label="Summary statistics, tab-delimited"></textarea>
+      </div>
+      <div>
+        <div class="col-head"><strong>Fitted curve</strong><button type="button" data-copy="fitOut">Copy</button></div>
+        <textarea class="out" id="fitOut" readonly aria-label="Fitted curve, tab-delimited"></textarea>
+      </div>
+    </div>
+  </section>
+
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var NS = "http://www.w3.org/2000/svg";
+  var W = 640, H = 380, M = {l:62, r:20, t:16, b:48};
+
+  function fmt(x, d){ return Number(x).toFixed(d); }
+  function el(tag, attrs, text){
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function niceTicks(min, max, n){
+    var span = max - min; if (span <= 0) span = 1;
+    var step = Math.pow(10, Math.floor(Math.log10(span / n)));
+    var e = (span / n) / step;
+    if (e >= 7.5) step *= 10; else if (e >= 3.5) step *= 5; else if (e >= 1.5) step *= 2;
+    var start = Math.ceil(min / step) * step, out = [];
+    for (var v = start; v <= max + step * 1e-9; v += step) out.push(+v.toFixed(10));
+    return {ticks: out, step: step};
+  }
+  function decimals(step){ return Math.max(0, -Math.floor(Math.log10(step) + 1e-9)); }
+
+  // Parse a list of periods; returns {values, bad}
+  function parseList(text){
+    var tokens = text.split(/[\s,;、，]+/).filter(function(s){ return s !== ""; });
+    var values = [], bad = [];
+    tokens.forEach(function(t){
+      var v = Number(t.replace(/．/g, "."));
+      if (isFinite(v)) values.push(v); else bad.push(t);
+    });
+    return {values: values, bad: bad};
+  }
+  function stats(a){
+    var n = a.length, mean = a.reduce(function(s,v){ return s + v; }, 0) / n;
+    var sd = n > 1 ? Math.sqrt(a.reduce(function(s,v){ return s + (v - mean) * (v - mean); }, 0) / (n - 1)) : NaN;
+    return {n:n, mean:mean, sd:sd, se: n > 1 ? sd / Math.sqrt(n) : NaN};
+  }
+  function statLine(s){
+    if (!s) return "";
+    return "n = " + s.n + ", mean " + fmt(s.mean,3) + " h" + (s.n > 1 ? ", SD " + fmt(s.sd,3) + ", SEM " + fmt(s.se,3) : "");
+  }
+
+  function clearOutputs(msg){
+    $("q10").textContent = "–";
+    $("unc").textContent = ""; $("interp").textContent = "";
+    $("err").textContent = msg || "";
+    $("dataOut").value = ""; $("sumOut").value = ""; $("fitOut").value = "";
+    var svg = $("chart"); while (svg.firstChild) svg.removeChild(svg.firstChild);
+  }
+
+  function update(){
+    $("chartTitle").textContent = $("desc").value.trim();
+    var L1 = parseList($("p1").value), L2 = parseList($("p2").value);
+    var S1 = L1.values.length ? stats(L1.values) : null, S2 = L2.values.length ? stats(L2.values) : null;
+    $("s1").textContent = statLine(S1); $("s2").textContent = statLine(S2);
+
+    var tr1 = $("t1").value.trim(), tr2 = $("t2").value.trim();
+    if (tr1 === "" || tr2 === "") return clearOutputs("Fill in both temperatures.");
+    var T1 = parseFloat(tr1), T2 = parseFloat(tr2);
+    if (!isFinite(T1) || !isFinite(T2)) return clearOutputs("Temperatures must be numbers.");
+    if (L1.bad.length || L2.bad.length) return clearOutputs("Not a number: " + L1.bad.concat(L2.bad).slice(0,3).join(", "));
+    if (!S1 || !S2) return clearOutputs("Enter at least one period for each temperature.");
+    if (T1 === T2) return clearOutputs("The two temperatures must differ.");
+    if (L1.values.concat(L2.values).some(function(v){ return v <= 0; })) return clearOutputs("Periods must be greater than zero.");
+
+    var P1 = S1.mean, P2 = S2.mean, dT = T2 - T1;
+    var q10 = Math.pow(P1 / P2, 10 / dT);
+    $("err").textContent = "";
+    $("q10").textContent = fmt(q10, 3);
+
+    // Approximate uncertainty (delta method on ln Q10, using SEM of each mean)
+    var unc = "";
+    if (S1.n > 1 && S2.n > 1){
+      var seLn = (10 / Math.abs(dT)) * Math.sqrt(Math.pow(S1.se / P1, 2) + Math.pow(S2.se / P2, 2));
+      var lo = q10 * Math.exp(-1.96 * seLn), hi = q10 * Math.exp(1.96 * seLn);
+      $("q10").innerHTML = fmt(q10, 3) + " <small>± " + fmt(q10 * seLn, 3) + "</small>";
+      unc = "± approx. SE from SEMs; 95% range " + fmt(lo,3) + "–" + fmt(hi,3);
+    } else if (S1.n > 1 || S2.n > 1){
+      unc = "Add replicates at both temperatures for an SE.";
+    }
+    $("unc").textContent = unc;
+
+    var interp = "";
+    if (q10 >= 0.8 && q10 <= 1.2) interp = "Within the typical compensated range (0.8–1.2).";
+    else if (q10 > 1.2) interp = "Above the typical compensated range (0.8–1.2).";
+    else interp = "Below 0.8: overcompensated.";
+    $("interp").textContent = interp;
+
+    // Fitted curve through the means: P(T) = P1 * Q10^(-(T - T1)/10)
+    var tLo = Math.min(T1, T2), tHi = Math.max(T1, T2), pad = (tHi - tLo) * 0.25;
+    var xMin = tLo - pad, xMax = tHi + pad;
+    var model = function(T){ return P1 * Math.pow(q10, -(T - T1) / 10); };
+    var N = 100, fit = [];
+    for (var i = 0; i <= N; i++){ var T = xMin + (xMax - xMin) * i / N; fit.push([T, model(T)]); }
+
+    var rows = ["Temperature (°C)\tPeriod (h)"];
+    L1.values.forEach(function(v){ rows.push(fmt(T1,2) + "\t" + fmt(v,3)); });
+    L2.values.forEach(function(v){ rows.push(fmt(T2,2) + "\t" + fmt(v,3)); });
+    $("dataOut").value = rows.join("\n");
+    var sdTxt = function(s){ return s.n > 1 ? fmt(s.sd,4) : ""; }, seTxt = function(s){ return s.n > 1 ? fmt(s.se,4) : ""; };
+    $("sumOut").value = "Temperature (°C)\tn\tMean period (h)\tSD\tSEM\n" +
+      fmt(T1,2) + "\t" + S1.n + "\t" + fmt(P1,4) + "\t" + sdTxt(S1) + "\t" + seTxt(S1) + "\n" +
+      fmt(T2,2) + "\t" + S2.n + "\t" + fmt(P2,4) + "\t" + sdTxt(S2) + "\t" + seTxt(S2) + "\n\nQ10\t" + fmt(q10,4);
+    $("fitOut").value = "Temperature (°C)\tFitted period (h)\n" + fit.map(function(r){ return fmt(r[0],3) + "\t" + fmt(r[1],4); }).join("\n");
+
+    draw([[T1, L1.values, S1, "var(--cool)"], [T2, L2.values, S2, "var(--warm)"]], fit, xMin, xMax, q10);
+  }
+
+  function draw(groups, fit, xMin, xMax, q10){
+    var svg = $("chart"); while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var ys = fit.map(function(r){ return r[1]; });
+    groups.forEach(function(g){
+      ys = ys.concat(g[1]);
+      if (g[2].n > 1) ys.push(g[2].mean + g[2].sd, g[2].mean - g[2].sd);
+    });
+    var yMin = Math.min.apply(null, ys), yMax = Math.max.apply(null, ys);
+    var yPad = (yMax - yMin) * 0.12 || 1; yMin -= yPad; yMax += yPad;
+    var xt = niceTicks(xMin, xMax, 6), yt = niceTicks(yMin, yMax, 6);
+    var pw = W - M.l - M.r, ph = H - M.t - M.b;
+    var sx = function(x){ return M.l + (x - xMin) / (xMax - xMin) * pw; };
+    var sy = function(y){ return M.t + ph - (y - yMin) / (yMax - yMin) * ph; };
+
+    var g = el("g", {});
+    yt.ticks.forEach(function(v){
+      if (v < yMin || v > yMax) return;
+      g.appendChild(el("line", {x1:M.l, x2:M.l+pw, y1:sy(v), y2:sy(v), "class":"grid"}));
+      g.appendChild(el("text", {x:M.l-8, y:sy(v)+4, "text-anchor":"end"}, v.toFixed(decimals(yt.step))));
+    });
+    xt.ticks.forEach(function(v){
+      if (v < xMin || v > xMax) return;
+      g.appendChild(el("line", {x1:sx(v), x2:sx(v), y1:M.t+ph, y2:M.t+ph+5, "class":"axis"}));
+      g.appendChild(el("text", {x:sx(v), y:M.t+ph+20, "text-anchor":"middle"}, v.toFixed(decimals(xt.step))));
+    });
+    g.appendChild(el("line", {x1:M.l, x2:M.l+pw, y1:M.t+ph, y2:M.t+ph, "class":"axis"}));
+    g.appendChild(el("line", {x1:M.l, x2:M.l, y1:M.t, y2:M.t+ph, "class":"axis"}));
+    g.appendChild(el("text", {x:M.l+pw/2, y:H-10, "text-anchor":"middle", style:"font-size:13px"}, "Temperature (°C)"));
+    g.appendChild(el("text", {x:16, y:M.t+ph/2, "text-anchor":"middle", transform:"rotate(-90 16 "+(M.t+ph/2)+")", style:"font-size:13px"}, "Period (h)"));
+
+    var d = fit.map(function(r,i){ return (i ? "L" : "M") + sx(r[0]).toFixed(2) + " " + sy(r[1]).toFixed(2); }).join(" ");
+    g.appendChild(el("path", {d:d, "class":"curve"}));
+
+    groups.forEach(function(grp){
+      var T = grp[0], vals = grp[1], s = grp[2], col = grp[3];
+      var cx = sx(T), off = 20; // replicates sit just left of the mean so they don't overlap it
+      vals.forEach(function(v, i){
+        var jitter = vals.length > 1 ? ((i % 3) - 1) * 4 : 0;
+        var c = el("circle", {cx:cx - off + jitter, cy:sy(v), r:4, style:"fill:none;stroke:"+col+";stroke-width:1.5;opacity:.85"});
+        c.appendChild(el("title", {}, fmt(T,2) + " °C, " + fmt(v,3) + " h"));
+        g.appendChild(c);
+      });
+      if (s.n > 1){
+        var yt1 = sy(s.mean + s.sd), yb = sy(s.mean - s.sd);
+        g.appendChild(el("line", {x1:cx, x2:cx, y1:yt1, y2:yb, style:"stroke:"+col+";stroke-width:1.5"}));
+        g.appendChild(el("line", {x1:cx-6, x2:cx+6, y1:yt1, y2:yt1, style:"stroke:"+col+";stroke-width:1.5"}));
+        g.appendChild(el("line", {x1:cx-6, x2:cx+6, y1:yb, y2:yb, style:"stroke:"+col+";stroke-width:1.5"}));
+      }
+      var m = el("circle", {cx:cx, cy:sy(s.mean), r:7, style:"fill:"+col+";stroke:var(--panel);stroke-width:2"});
+      m.appendChild(el("title", {}, fmt(T,2) + " °C, mean " + fmt(s.mean,3) + " h (n = " + s.n + ")"));
+      g.appendChild(m);
+    });
+
+    g.appendChild(el("text", {x:M.l+pw-10, y:M.t+18, "text-anchor":"end", style:"font-size:13px;fill:var(--ink)"}, "Q10 = " + fmt(q10,3)));
+    svg.appendChild(g);
+  }
+
+  ["desc","t1","p1","t2","p2"].forEach(function(id){ $(id).addEventListener("input", update); });
+
+  document.querySelectorAll("button[data-copy]").forEach(function(b){
+    b.addEventListener("click", function(){
+      var ta = $(b.getAttribute("data-copy"));
+      var done = function(){ b.textContent = "Copied"; setTimeout(function(){ b.textContent = "Copy"; }, 1400); };
+      var fallback = function(){ ta.select(); try{ document.execCommand("copy"); done(); }catch(e){} };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done, fallback);
+      else fallback();
+    });
+  });
+
+  $("clearBtn").addEventListener("click", function(){
+    ["desc","t1","p1","t2","p2"].forEach(function(id){ $(id).value = ""; });
+    $("sampleNote").classList.add("cleared");
+    $("sampleText").textContent = "Enter your data: a temperature and one or more periods for each condition. Q10 uses the mean periods.";
+    update();
+    $("t1").focus();
+  });
+
+  update();
+})();
+</script>
+</body>
+</html>
