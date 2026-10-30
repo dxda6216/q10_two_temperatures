@@ -1,40 +1,110 @@
-# Circadian period Q<sub>10</sub> calculator
-This is a simple code to calculate Q<sub>10</sub> values.
+# Circadian period Q10 calculator (web app)
 
-Q<sub>10</sub> values will be calculated by the following equation:<br />
-![q10_eq_s](https://user-images.githubusercontent.com/101025597/157246791-fafd8e4e-d997-413c-a35e-82eea43a9cbc.png) <br />
+A single-file web app that calculates the temperature coefficient (Q10) of the circadian period from measurements taken at two temperatures. It is a browser-based version of the Colab notebook [dxda6216/q10_two_temperatures](https://github.com/dxda6216/q10_two_temperatures), extended to accept replicate measurements at each temperature.
 
-**Open in Google Colab:**<br/>
-https://colab.research.google.com/github/dxda6216/q10_two_temperatures/blob/main/circadian_period_q10_2_temperatures.ipynb
+**Try it now: <https://dxda6216.github.io/q10_two_temperatures/index.html>**
 
-If you have period data obtained at more than 2 different temperatures, please see: https://github.com/dxda6216/q10
+Open the link in your browser and start using it right away, no download needed.
 
-![q102ptss](https://user-images.githubusercontent.com/101025597/157476620-ea223179-3158-42d2-93d2-3a3b9b265200.png)
+Everything runs locally in your browser. No data is sent anywhere or saved.
 
-## Usage
+## Quick start
 
-<b><ins>Sample Description</ins></b>
+The fastest way is to open the hosted app at <https://dxda6216.github.io/q10_two_temperatures/index.html>. To use it offline instead:
 
-Eter a description of your sample to the "<i>Data_description</i>" input form. This field can be blank.
+1. Download `q10_two_temperatures.html`.
+2. Open it in any modern browser (Chrome, Edge, Firefox, Safari).
+3. The values shown on first load are sample data. Press **Clear inputs** to erase them, then enter your own data.
 
-<pre><b>Data_description:</b> <ins>XYZ gene knockout cells at 32.5 and 37.2˚C    </ins></pre>
+No installation, server, or Python environment is required. The page loads two web fonts from Google Fonts when online; offline, it falls back to system fonts and works the same.
 
-<b><ins>Temperature and Period Data</ins></b>
+## Inputs
 
-Enter your data into the "<i>Temperature_1</i>", "<i>Period_1</i>", "<i>Temperature_2</i>", and "<i>Period_2</i>" input forms.
-For example, if you have the following dataset
+| Field | Description |
+|---|---|
+| Sample description | Optional. Shown as the plot title. |
+| Temp (°C) | Temperature for each condition. The two temperatures must differ. |
+| Periods (h) | One or more period measurements for that temperature. |
 
-<pre><ins>Temp (˚C)</ins>   <ins>Period (hr)</ins>
-  33.4        27.2
-  37.0        22.6</pre>
-enter your data as follows:
-<pre><b>Temperature_1:</b> <ins>33.4                             </ins>
-<b>Period_1:</b> <ins>27.2                                  </ins>
-<b>Temperature_2:</b> <ins>37.0                             </ins>
-<b>Period_2:</b> <ins>22.6                                  </ins></pre>
+Replicate periods can be separated by line breaks, spaces, commas, semicolons, or tabs, so a column copied from Excel can be pasted directly. All periods must be greater than zero.
 
-This calculator is for calculating Q<sub>10</sub> values and plotting data only. Your data entered to this calculator will not be recorded or saved in any location (please see the code).
+Results update as you type.
 
-<b><ins>Exporting Dataset and Fitted Curve</ins></b>
+## Calculation
 
-To output the dataset and fitted curve in tab-delimited format, select "<b>Yes</b>" in the "<i>Display_tab_delimited_data</i>" dropdown, and 2-column datasets will be displayed. To export the data to Excel, copy the 2-column dataset and paste it onto an Excel worksheet (right click -> Paste Options: Paste Special... -> Paste as Unicode Text -> click "OK").
+Replicates at each temperature are averaged, and Q10 is calculated from the mean periods:
+
+```
+Q10 = (τ̄1 / τ̄2) ^ (10 / (T2 − T1))
+```
+
+where τ̄1 and τ̄2 are the mean periods at temperatures T1 and T2. With a single value per temperature, this is identical to the original notebook's two-point calculation.
+
+### Fitted curve
+
+The plotted curve is the exponential relationship implied by Q10, passing through both mean periods:
+
+```
+τ(T) = τ̄1 · Q10 ^ (−(T − T1) / 10)
+```
+
+It is drawn from 25% of the temperature span below the lower temperature to 25% above the higher one (101 points).
+
+### Summary statistics
+
+For each temperature the app reports n, mean, sample standard deviation (SD, n − 1 denominator), and standard error of the mean (SEM = SD / √n).
+
+### Uncertainty of Q10
+
+When both temperatures have at least two replicates, an approximate standard error of Q10 is estimated by propagating each mean's SEM (delta method on ln Q10):
+
+```
+SE(ln Q10) = (10 / |T2 − T1|) · √[ (SEM1 / τ̄1)² + (SEM2 / τ̄2)² ]
+SE(Q10)   ≈ Q10 · SE(ln Q10)
+95% range ≈ Q10 · exp(±1.96 · SE(ln Q10))
+```
+
+This is a large-sample approximation intended as a guide. With small n, consider a t-based interval or bootstrap analysis for formal reporting.
+
+### Interpretation
+
+The app labels the result against the commonly cited temperature-compensation range for circadian clocks:
+
+| Q10 | Label |
+|---|---|
+| 0.8–1.2 | Within the typical compensated range |
+| > 1.2 | Above the typical compensated range |
+| < 0.8 | Overcompensated |
+
+## Plot
+
+- Open circles show individual replicates (offset slightly left of the mean so they do not overlap it).
+- Filled circles show the mean at each temperature, with ± SD error bars when n ≥ 2.
+- The line shows the fitted curve, with the Q10 value in the corner.
+
+Hover over a point to see its exact values.
+
+## Exporting data
+
+The **Tab-delimited data** panel provides three blocks, each with a **Copy** button:
+
+| Block | Contents |
+|---|---|
+| All replicates | Temperature and period for every measurement |
+| Summary | Temperature, n, mean, SD, SEM for each condition, plus Q10 |
+| Fitted curve | Temperature and fitted period for the curve |
+
+To paste into Excel: right-click a cell → **Paste Special…** → **Unicode Text** → **OK**.
+
+## Layout
+
+The page is designed to fit in a 900-pixel-tall browser window on desktop screens. Below 760 px wide (for example, on phones) the panels stack vertically. Light and dark mode follow your system setting.
+
+## Related
+
+- Original Colab notebook: [dxda6216/q10_two_temperatures](https://github.com/dxda6216/q10_two_temperatures)
+- For period data at more than two temperatures: [dxda6216/q10](https://github.com/dxda6216/q10)
+
+## License
+
+This web app is derived from [dxda6216/q10_two_temperatures](https://github.com/dxda6216/q10_two_temperatures), which is licensed under the GNU General Public License v3.0. This derivative work is likewise distributed under GPL-3.0.
